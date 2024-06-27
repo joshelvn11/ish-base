@@ -5,7 +5,12 @@ from .models import Project, Epic, Sprint, UserStory, Task
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = '__all__'
+        fields = ['id', 'name', 'description']
+
+    def create(self, validated_data):
+        # Set the owner to the requesting user
+        validated_data['owner'] = self.context['request'].user
+        return super().create(validated_data)
 
 
 class EpicSerializer(serializers.ModelSerializer):
