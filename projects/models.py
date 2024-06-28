@@ -35,7 +35,7 @@ class Epic(models.Model):
 class Sprint(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     start_date = models.DateField()
     end_date = models.DateField()
 
