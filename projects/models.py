@@ -42,7 +42,7 @@ class Sprint(models.Model):
 
 class UserStory(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    epic = models.ForeignKey(Epic, on_delete=models.CASCADE, null=True)
+    epic = models.ForeignKey(Epic, on_delete=models.CASCADE, null=True, blank=True)
     sprint = models.ForeignKey(Sprint, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=256)
     description = models.TextField(null=True, blank=True)
