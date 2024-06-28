@@ -1,10 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-PRIORITY = [(1, "CRITICAL"),
-            (2, "ESSENTIAL"),
-            (3, "BENEFICIAL"),
-            (4, "OPTIONAL")]
+PRIORITY = [("CRITICAL", "CRITICAL"),
+            ("ESSENTIAL", "ESSENTIAL"),
+            ("BENEFICIAL", "BENEFICIAL"),
+            ("OPTIONAL", "OPTIONAL")]
 
 STATUS = [("TO DO", "TO DO"),
           ("IN PROGRESS", "IN PROGRESS"),
@@ -26,6 +26,7 @@ class Epic(models.Model):
     name = models.CharField(max_length=256)
     description = models.TextField(null=True)
     status = models.CharField(choices=STATUS, default="TO DO")
+    priority = models.CharField(choices=PRIORITY, null=True, blank=True)
 
     def __str__(self):
         return f"[EPIC] {self.name} [PROJECT] {self.project.name} [USER] {self.project.owner.username}"
@@ -48,7 +49,7 @@ class UserStory(models.Model):
     user_story = models.TextField(null=True, blank=True)
     subtasks = models.JSONField(null=True, editable=True, blank=True)
     due_date = models.DateField(null=True, blank=True)
-    priority = models.IntegerField(choices=PRIORITY, null=True, blank=True)
+    priority = models.CharField(choices=PRIORITY, null=True, blank=True)
     status = models.CharField(choices=STATUS, default="TO DO")
 
 
@@ -60,5 +61,5 @@ class Task(models.Model):
     description = models.TextField(null=True, blank=True)
     subtasks = models.JSONField(null=True, editable=True, blank=True)
     due_date = models.DateField(null=True, blank=True)
-    priority = models.IntegerField(choices=PRIORITY, null=True, blank=True)
+    priority = models.CharField(choices=PRIORITY, null=True, blank=True)
     status = models.CharField(choices=STATUS, default="TO DO")
