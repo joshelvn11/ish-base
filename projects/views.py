@@ -4,8 +4,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Project
-from .serializers import ProjectSerializer
+from .models import Project, Epic, UserStory, Task, Sprint
+from .serializers import ProjectSerializer, EpicSerializer, UserStorySerializer, TaskSerializer, SprintSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
 from django.shortcuts import get_object_or_404
@@ -59,4 +59,149 @@ class ProjectDetailAPIView(APIView):
         if project is None:
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         project.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class EpicListCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsProjectOwner]
+
+    def get_objects(self, pk):
+        # Retrieve epics for the request project
+        project = get_object_or_404(Project, pk=pk)
+        epics = Epic.objects.filter(project=project)
+        # Check the permissions for the project object
+        self.check_object_permissions(self.request, project)
+        return epics
+
+    def get(self, request, pk):
+        epics = self.get_objects(pk)
+        serializer = EpicSerializer(epics, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = EpicSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EpicDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsProjectOwner]
+
+    def get_object(self, pk):
+        obj = get_object_or_404(Epic, pk=pk)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    def get(self, request, pk):
+        epic = self.get_object(pk)
+        serializer = EpicSerializer(epic)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        epic = self.get_object(pk)
+        serializer = EpicSerializer(epic, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        epic = self.get_object(pk)
+        epic.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UserStoryListCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsProjectOwner]
+
+    def get_objects(self, pk):
+        # Retrieve user stories for the request project
+        project = get_object_or_404(Project, pk=pk)
+        user_stories = UserStory.objects.filter(project=project)
+        # Check the permissions for the project object
+        self.check_object_permissions(self.request, project)
+        return user_stories
+
+    def get(self, request, pk):
+        user_stories = self.get_objects(pk)
+        serializer = UserStorySerializer(user_stories, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = UserStorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserStoryDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsProjectOwner]
+
+    def get_object(self, pk):
+        obj = get_object_or_404(UserStory, pk=pk)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    def get(self, request, pk):
+        user_story = self.get_object(pk)
+        serializer = UserStorySerializer(user_story)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        user_story = self.get_object(pk)
+        serializer = UserStorySerializer(user_story, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        user_story = self.get_object(pk)
+        user_story.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class TaskListCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        tasks = Task.objects.filter(project__owner=request.user)
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = TaskSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TaskDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsProjectOwner]
+
+    def get_object(self, pk):
+        obj = get_object_or_404(Task, pk=pk)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    def get(self, request, pk):
+        task = self.get_object(pk)
+        serializer = TaskSerializer(task)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        task = self.get_object(pk)
+        serializer = TaskSerializer(task, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        task = self.get_object(pk)
+        task.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
