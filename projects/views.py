@@ -86,6 +86,59 @@ class EpicListCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class SprintListCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsProjectOwner]
+
+    def get_objects(self, pk):
+        # Retrieve sprints for the request project
+        project = get_object_or_404(Project, pk=pk)
+        sprints = Sprint.objects.filter(project=project)
+        # Check the permissions for the project object
+        self.check_object_permissions(self.request, project)
+        return sprints
+
+    def get(self, request, pk):
+        sprints = self.get_objects(pk)
+        serializer = SprintSerializer(sprints, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        project = get_object_or_404(Project, pk=pk)
+        serializer = SprintSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save(project=project)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SprintDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsProjectOwner]
+
+    def get_object(self, pk):
+        obj = get_object_or_404(Sprint, pk=pk)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    def get(self, request, pk):
+        sprint = self.get_object(pk)
+        serializer = SprintSerializer(sprint)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        sprint = self.get_object(pk)
+        serializer = SprintSerializer(sprint, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        sprint = self.get_object(pk)
+        sprint.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
 class EpicDetailAPIView(APIView):
     permission_classes = [IsAuthenticated, IsProjectOwner]
 
