@@ -7,5 +7,5 @@ urlpatterns = [
     path('projects/<int:pk>/epics/', EpicListCreateAPIView.as_view(), name='epic-list-create'),
     path('projects/<int:pk>/user-stories/', UserStoryListCreateAPIView.as_view(), name='user-story-list-create'),
     path('projects/<int:pk>/tasks/', TaskListCreateAPIView.as_view(), name='task-list-create'),
-    path('projects/<int:pk>/sprint/', SprintListCreateAPIView.as_view(), name='sprint-list-create'),
+    path('projects/<int:pk>/sprints/', SprintListCreateAPIView.as_view(), name='sprint-list-create'),
 ]
