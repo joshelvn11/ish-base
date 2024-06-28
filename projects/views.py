@@ -165,10 +165,18 @@ class UserStoryDetailAPIView(APIView):
 
 
 class TaskListCreateAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsProjectOwner]
 
-    def get(self, request):
-        tasks = Task.objects.filter(project__owner=request.user)
+    def get_objects(self, pk):
+        # Retrieve tasks for the request project
+        project = get_object_or_404(Project, pk=pk)
+        tasks = Task.objects.filter(project=project)
+        # Check the permissions for the project object
+        self.check_object_permissions(self.request, project)
+        return tasks
+
+    def get(self, request, pk):
+        tasks = self.get_objects(pk)
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
 
