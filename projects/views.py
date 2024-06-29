@@ -78,12 +78,41 @@ class EpicListCreateAPIView(APIView):
         serializer = EpicSerializer(epics, many=True)
         return Response(serializer.data)
 
-    def post(self, request):
+    def post(self, request, pk):
         serializer = EpicSerializer(data=request.data)
+        project = get_object_or_404(Project, pk=pk)
+        self.check_object_permissions(self.request, project)
+        
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class EpicDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsProjectOwner]
+
+    def get_object(self, pk):
+        obj = get_object_or_404(Epic, pk=pk)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    def get(self, request, pk):
+        epic = self.get_object(pk)
+        serializer = EpicSerializer(epic)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        epic = self.get_object(pk)
+        serializer = EpicSerializer(epic, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        epic = self.get_object(pk)
+        epic.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class SprintListCreateAPIView(APIView):
@@ -135,34 +164,6 @@ class SprintDetailAPIView(APIView):
     def delete(self, request, pk):
         sprint = self.get_object(pk)
         sprint.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-
-class EpicDetailAPIView(APIView):
-    permission_classes = [IsAuthenticated, IsProjectOwner]
-
-    def get_object(self, pk):
-        obj = get_object_or_404(Epic, pk=pk)
-        self.check_object_permissions(self.request, obj)
-        return obj
-
-    def get(self, request, pk):
-        epic = self.get_object(pk)
-        serializer = EpicSerializer(epic)
-        return Response(serializer.data)
-
-    def put(self, request, pk):
-        epic = self.get_object(pk)
-        serializer = EpicSerializer(epic, data=request.data, context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        epic = self.get_object(pk)
-        epic.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

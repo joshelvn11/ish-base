@@ -24,8 +24,8 @@ class Project(models.Model):
 class Epic(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
-    description = models.TextField(null=True)
-    status = models.CharField(choices=STATUS, default="TO DO")
+    description = models.TextField(null=True, blank=True)
+    status = models.CharField(choices=STATUS, null=True, blank=True)
     priority = models.CharField(choices=PRIORITY, null=True, blank=True)
 
     def __str__(self):
