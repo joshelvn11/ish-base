@@ -50,7 +50,7 @@ class UserStory(models.Model):
     subtasks = models.JSONField(null=True, editable=True, blank=True)
     due_date = models.DateField(null=True, blank=True)
     priority = models.CharField(choices=PRIORITY, null=True, blank=True)
-    status = models.CharField(choices=STATUS, default="TO DO")
+    status = models.CharField(choices=STATUS, null=True, blank=True)
 
 
 class Task(models.Model):
@@ -62,4 +62,4 @@ class Task(models.Model):
     subtasks = models.JSONField(null=True, editable=True, blank=True)
     due_date = models.DateField(null=True, blank=True)
     priority = models.CharField(choices=PRIORITY, null=True, blank=True)
-    status = models.CharField(choices=STATUS, default="TO DO")
+    status = models.CharField(choices=STATUS, null=True, blank=True)
