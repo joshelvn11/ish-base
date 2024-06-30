@@ -82,27 +82,30 @@ class EpicListCreateAPIView(APIView):
         serializer = EpicSerializer(data=request.data)
         project = get_object_or_404(Project, pk=pk)
         self.check_object_permissions(self.request, project)
-        
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class EpicDetailAPIView(APIView):
     permission_classes = [IsAuthenticated, IsProjectOwner]
 
-    def get_object(self, pk):
-        obj = get_object_or_404(Epic, pk=pk)
-        self.check_object_permissions(self.request, obj)
-        return obj
+    def get_object(self, project_pk, epic_pk):
+        # Retrieve the requested epic
+        epic = get_object_or_404(Epic, pk=epic_pk, project=project_pk)
+        # Check if the requesting user own the epic's related project
+        self.check_object_permissions(self.request, epic)
+        return epic
 
-    def get(self, request, pk):
-        epic = self.get_object(pk)
+    def get(self, request, project_pk, epic_pk):
+        epic = self.get_object(project_pk, epic_pk)
         serializer = EpicSerializer(epic)
         return Response(serializer.data)
 
-    def put(self, request, pk):
-        epic = self.get_object(pk)
+    def put(self, request, project_pk, epic_pk):
+        epic = self.get_object(project_pk, epic_pk)
         serializer = EpicSerializer(epic, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
