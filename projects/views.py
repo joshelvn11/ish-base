@@ -79,14 +79,17 @@ class EpicListCreateAPIView(APIView):
         return Response(serializer.data)
 
     def post(self, request, pk):
-        serializer = EpicSerializer(data=request.data)
-        project = get_object_or_404(Project, pk=pk)
-        self.check_object_permissions(self.request, project)
+        try:
+            serializer = EpicSerializer(data=request.data)
+            project = get_object_or_404(Project, pk=pk)
+            self.check_object_permissions(self.request, project)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class EpicDetailAPIView(APIView):
@@ -112,8 +115,8 @@ class EpicDetailAPIView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk):
-        epic = self.get_object(pk)
+    def delete(self, request, project_pk, epic_pk):
+        epic = self.get_object(project_pk, epic_pk)
         epic.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
