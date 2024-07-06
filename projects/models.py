@@ -47,10 +47,14 @@ class UserStory(models.Model):
     name = models.CharField(max_length=256)
     description = models.TextField(null=True, blank=True)
     user_story = models.TextField(null=True, blank=True)
+    acceptance_criteria = models.JSONField(null=True, editable=True, blank=True)
     subtasks = models.JSONField(null=True, editable=True, blank=True)
     due_date = models.DateField(null=True, blank=True)
     priority = models.CharField(choices=PRIORITY, null=True, blank=True)
     status = models.CharField(choices=STATUS, null=True, blank=True)
+
+    def __str__(self):
+        return f"[US] {self.name} [PROJECT] {self.project.name} [USER] {self.project.owner.username}"
 
 
 class Task(models.Model):

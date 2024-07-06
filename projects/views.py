@@ -189,7 +189,7 @@ class UserStoryListCreateAPIView(APIView):
         serializer = UserStorySerializer(user_stories, many=True)
         return Response(serializer.data)
 
-    def post(self, request):
+    def post(self, request, pk):
         serializer = UserStorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -200,10 +200,11 @@ class UserStoryListCreateAPIView(APIView):
 class UserStoryDetailAPIView(APIView):
     permission_classes = [IsAuthenticated, IsProjectOwner]
 
-    def get_object(self, pk):
-        obj = get_object_or_404(UserStory, pk=pk)
-        self.check_object_permissions(self.request, obj)
-        return obj
+    def get_object(self, project_pk, userstory_pk):
+        project = get_object_or_404(Project, pk=project_pk)
+        userstory = get_object_or_404(UserStory, pk=userstory_pk, project=project)
+        self.check_object_permissions(self.request, userstory)
+        return userstory
 
     def get(self, request, pk):
         user_story = self.get_object(pk)
@@ -213,6 +214,14 @@ class UserStoryDetailAPIView(APIView):
     def put(self, request, pk):
         user_story = self.get_object(pk)
         serializer = UserStorySerializer(user_story, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, project_pk, userstory_pk):
+        user_story = self.get_object(project_pk, userstory_pk)
+        serializer = UserStorySerializer(user_story, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
