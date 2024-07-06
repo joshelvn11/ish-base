@@ -206,8 +206,8 @@ class UserStoryDetailAPIView(APIView):
         self.check_object_permissions(self.request, userstory)
         return userstory
 
-    def get(self, request, pk):
-        user_story = self.get_object(pk)
+    def get(self, request, project_pk, userstory_pk):
+        user_story = self.get_object(project_pk, userstory_pk)
         serializer = UserStorySerializer(user_story)
         return Response(serializer.data)
 
