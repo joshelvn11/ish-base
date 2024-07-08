@@ -11,6 +11,11 @@ STATUS = [("TO DO", "TO DO"),
           ("REVIEW", "REVIEW"),
           ("DONE", "DONE")]
 
+ITEM_TYPE = [("USER STORY", "USER STORY"),
+             ("TASK", "TASK"),
+             ("BUG", "BUG"),
+             ("DOCUMENTATION", "DOCUMENTATION")]
+
 
 class Project(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -40,7 +45,7 @@ class Sprint(models.Model):
     end_date = models.DateField()
 
 
-class UserStory(models.Model):
+class Item(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     epic = models.ForeignKey(Epic, on_delete=models.CASCADE, null=True, blank=True)
     sprint = models.ForeignKey(Sprint, on_delete=models.SET_NULL, null=True, blank=True)
