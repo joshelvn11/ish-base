@@ -61,15 +61,3 @@ class Item(models.Model):
 
     def __str__(self):
         return f"[{self.item_type}] {self.name} [PROJECT] {self.project.name} [USER] {self.project.owner.username}"
-
-
-class Task(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    epic = models.ForeignKey(Epic, on_delete=models.CASCADE, null=True, blank=True)
-    sprint = models.ForeignKey(Sprint, on_delete=models.SET_NULL, null=True, blank=True)
-    name = models.CharField(max_length=256)
-    description = models.TextField(null=True, blank=True)
-    subtasks = models.JSONField(null=True, editable=True, blank=True)
-    due_date = models.DateField(null=True, blank=True)
-    priority = models.CharField(choices=PRIORITY, null=True, blank=True)
-    status = models.CharField(choices=STATUS, null=True, blank=True)
