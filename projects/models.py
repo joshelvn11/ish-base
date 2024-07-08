@@ -60,7 +60,7 @@ class Item(models.Model):
     status = models.CharField(choices=STATUS, null=True, blank=True)
 
     def __str__(self):
-        return f"[US] {self.name} [PROJECT] {self.project.name} [USER] {self.project.owner.username}"
+        return f"[{self.item_type}] {self.name} [PROJECT] {self.project.name} [USER] {self.project.owner.username}"
 
 
 class Task(models.Model):
