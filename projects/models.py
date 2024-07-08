@@ -11,7 +11,7 @@ STATUS = [("TO DO", "TO DO"),
           ("REVIEW", "REVIEW"),
           ("DONE", "DONE")]
 
-ITEM_TYPE = [("USER_STORY", "USER_STORY"),
+ITEM_TYPE = [("USER STORY", "USER STORY"),
              ("TASK", "TASK"),
              ("BUG", "BUG"),
              ("DOCUMENTATION", "DOCUMENTATION")]
@@ -20,7 +20,7 @@ ITEM_TYPE = [("USER_STORY", "USER_STORY"),
 class Project(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
-    description = models.TextField(null=True)
+    description = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f"[USER] {self.owner.username} [PROJECT] {self.name}"
@@ -46,8 +46,8 @@ class Sprint(models.Model):
 
 
 class Item(models.Model):
-    item_type = models.CharField(choices=ITEM_TYPE, default="TASK")
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    item_type = models.CharField(choices=ITEM_TYPE, default="TASK")
     epic = models.ForeignKey(Epic, on_delete=models.CASCADE, null=True, blank=True)
     sprint = models.ForeignKey(Sprint, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=256)

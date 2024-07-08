@@ -203,7 +203,7 @@ class ItemDetailAPIView(APIView):
     def get_object(self, project_pk, item_pk):
         project = get_object_or_404(Project, pk=project_pk)
         item = get_object_or_404(Item, pk=item_pk, project=project)
-        self.check_object_permissions(self.request, Item)
+        self.check_object_permissions(self.request, item)
         return item
 
     def get(self, request, project_pk, item_pk):
