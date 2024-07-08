@@ -4,8 +4,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Project, Epic, UserStory, Task, Sprint
-from .serializers import ProjectSerializer, EpicSerializer, UserStorySerializer, TaskSerializer, SprintSerializer
+from .models import Project, Epic, Item, Sprint
+from .serializers import ProjectSerializer, EpicSerializer, ItemSerializer, SprintSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
 from django.shortcuts import get_object_or_404
@@ -173,112 +173,61 @@ class SprintDetailAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class UserStoryListCreateAPIView(APIView):
+class ItemListCreateAPIView(APIView):
     permission_classes = [IsAuthenticated, IsProjectOwner]
 
     def get_objects(self, pk):
         # Retrieve user stories for the request project
         project = get_object_or_404(Project, pk=pk)
-        user_stories = UserStory.objects.filter(project=project)
+        items = Item.objects.filter(project=project)
         # Check the permissions for the project object
         self.check_object_permissions(self.request, project)
-        return user_stories
+        return items
 
     def get(self, request, pk):
-        user_stories = self.get_objects(pk)
-        serializer = UserStorySerializer(user_stories, many=True)
+        items = self.get_objects(pk)
+        serializer = ItemSerializer(items, many=True)
         return Response(serializer.data)
 
     def post(self, request, pk):
-        serializer = UserStorySerializer(data=request.data)
+        serializer = ItemSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserStoryDetailAPIView(APIView):
+class ItemDetailAPIView(APIView):
     permission_classes = [IsAuthenticated, IsProjectOwner]
 
-    def get_object(self, project_pk, userstory_pk):
+    def get_object(self, project_pk, item_pk):
         project = get_object_or_404(Project, pk=project_pk)
-        userstory = get_object_or_404(UserStory, pk=userstory_pk, project=project)
-        self.check_object_permissions(self.request, userstory)
-        return userstory
+        item = get_object_or_404(Item, pk=item_pk, project=project)
+        self.check_object_permissions(self.request, item)
+        return item
 
-    def get(self, request, project_pk, userstory_pk):
-        user_story = self.get_object(project_pk, userstory_pk)
-        serializer = UserStorySerializer(user_story)
+    def get(self, request, project_pk, item_pk):
+        item = self.get_object(project_pk, item_pk)
+        serializer = ItemSerializer(item)
         return Response(serializer.data)
 
     def put(self, request, pk):
-        user_story = self.get_object(pk)
-        serializer = UserStorySerializer(user_story, data=request.data, context={'request': request})
+        item = self.get_object(pk)
+        serializer = ItemSerializer(item, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def patch(self, request, project_pk, userstory_pk):
-        user_story = self.get_object(project_pk, userstory_pk)
-        serializer = UserStorySerializer(user_story, data=request.data, partial=True, context={'request': request})
+    def patch(self, request, project_pk, item_pk):
+        item = self.get_object(project_pk, item_pk)
+        serializer = ItemSerializer(item, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk):
-        user_story = self.get_object(pk)
-        user_story.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class TaskListCreateAPIView(APIView):
-    permission_classes = [IsAuthenticated, IsProjectOwner]
-
-    def get_objects(self, pk):
-        # Retrieve tasks for the request project
-        project = get_object_or_404(Project, pk=pk)
-        tasks = Task.objects.filter(project=project)
-        # Check the permissions for the project object
-        self.check_object_permissions(self.request, project)
-        return tasks
-
-    def get(self, request, pk):
-        tasks = self.get_objects(pk)
-        serializer = TaskSerializer(tasks, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = TaskSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class TaskDetailAPIView(APIView):
-    permission_classes = [IsAuthenticated, IsProjectOwner]
-
-    def get_object(self, pk):
-        obj = get_object_or_404(Task, pk=pk)
-        self.check_object_permissions(self.request, obj)
-        return obj
-
-    def get(self, request, pk):
-        task = self.get_object(pk)
-        serializer = TaskSerializer(task)
-        return Response(serializer.data)
-
-    def put(self, request, pk):
-        task = self.get_object(pk)
-        serializer = TaskSerializer(task, data=request.data, context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        task = self.get_object(pk)
-        task.delete()
+    def delete(self, request, project_pk, item_pk):
+        item = self.get_object(project_pk, item_pk)
+        item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

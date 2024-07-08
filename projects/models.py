@@ -11,11 +11,16 @@ STATUS = [("TO DO", "TO DO"),
           ("REVIEW", "REVIEW"),
           ("DONE", "DONE")]
 
+ITEM_TYPE = [("USER STORY", "USER STORY"),
+             ("TASK", "TASK"),
+             ("BUG", "BUG"),
+             ("DOCUMENTATION", "DOCUMENTATION")]
+
 
 class Project(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
-    description = models.TextField(null=True)
+    description = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f"[USER] {self.owner.username} [PROJECT] {self.name}"
@@ -40,8 +45,9 @@ class Sprint(models.Model):
     end_date = models.DateField()
 
 
-class UserStory(models.Model):
+class Item(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    item_type = models.CharField(choices=ITEM_TYPE, default="TASK")
     epic = models.ForeignKey(Epic, on_delete=models.CASCADE, null=True, blank=True)
     sprint = models.ForeignKey(Sprint, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=256)
@@ -54,16 +60,4 @@ class UserStory(models.Model):
     status = models.CharField(choices=STATUS, null=True, blank=True)
 
     def __str__(self):
-        return f"[US] {self.name} [PROJECT] {self.project.name} [USER] {self.project.owner.username}"
-
-
-class Task(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    epic = models.ForeignKey(Epic, on_delete=models.CASCADE, null=True, blank=True)
-    sprint = models.ForeignKey(Sprint, on_delete=models.SET_NULL, null=True, blank=True)
-    name = models.CharField(max_length=256)
-    description = models.TextField(null=True, blank=True)
-    subtasks = models.JSONField(null=True, editable=True, blank=True)
-    due_date = models.DateField(null=True, blank=True)
-    priority = models.CharField(choices=PRIORITY, null=True, blank=True)
-    status = models.CharField(choices=STATUS, null=True, blank=True)
+        return f"[{self.item_type}] {self.name} [PROJECT] {self.project.name} [USER] {self.project.owner.username}"

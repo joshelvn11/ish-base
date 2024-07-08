@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Project, Epic, Sprint, UserStory, Task
+from .models import Project, Epic, Sprint, Item
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -25,13 +25,7 @@ class SprintSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class UserStorySerializer(serializers.ModelSerializer):
+class ItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserStory
-        fields = '__all__'
-
-
-class TaskSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Task
+        model = Item
         fields = '__all__'
