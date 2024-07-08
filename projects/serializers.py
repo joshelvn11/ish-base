@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Project, Epic, Sprint, Item, Task
+from .models import Project, Epic, Sprint, Item
 
 
 class ProjectSerializer(serializers.ModelSerializer):
