@@ -11,7 +11,7 @@ STATUS = [("TO DO", "TO DO"),
           ("REVIEW", "REVIEW"),
           ("DONE", "DONE")]
 
-ITEM_TYPE = [("USER STORY", "USER STORY"),
+ITEM_TYPE = [("USER_STORY", "USER_STORY"),
              ("TASK", "TASK"),
              ("BUG", "BUG"),
              ("DOCUMENTATION", "DOCUMENTATION")]
@@ -46,6 +46,7 @@ class Sprint(models.Model):
 
 
 class Item(models.Model):
+    item_type = models.CharField(choices=ITEM_TYPE, default="TASK")
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     epic = models.ForeignKey(Epic, on_delete=models.CASCADE, null=True, blank=True)
     sprint = models.ForeignKey(Sprint, on_delete=models.SET_NULL, null=True, blank=True)
