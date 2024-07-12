@@ -257,7 +257,6 @@ class UserProjectSettingsDetailAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request, project_pk):
-        print(request.data)
         user_project_settings = self.get_object(project_pk)
         serializer = UserProjectSettingsSerializer(user_project_settings, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
