@@ -127,7 +127,7 @@ class SprintListCreateAPIView(APIView):
     def get_objects(self, pk):
         # Retrieve sprints for the request project
         project = get_object_or_404(Project, pk=pk)
-        sprints = Sprint.objects.filter(project=project)
+        sprints = Sprint.objects.filter(project=project).order_by('start_date')
         # Check the permissions for the project object
         self.check_object_permissions(self.request, project)
         return sprints
