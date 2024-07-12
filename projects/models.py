@@ -61,3 +61,12 @@ class Item(models.Model):
 
     def __str__(self):
         return f"[{self.item_type}] {self.name} [PROJECT] {self.project.name} [USER] {self.project.owner.username}"
+
+
+class UserProjectSettings(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    backlog_filter_options = models.JSONField(null=True, editable=True, blank=True)
+
+    def __str__(self):
+        return f"[USER] {self.user.username} [PROJECT] {self.project.name}"

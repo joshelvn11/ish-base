@@ -4,8 +4,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Project, Epic, Item, Sprint
-from .serializers import ProjectSerializer, EpicSerializer, ItemSerializer, SprintSerializer
+from .models import Project, Epic, Item, Sprint, UserProjectSettings
+from .serializers import ProjectSerializer, EpicSerializer, ItemSerializer, SprintSerializer, UserProjectSettingsSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
 from django.shortcuts import get_object_or_404
@@ -230,4 +230,42 @@ class ItemDetailAPIView(APIView):
     def delete(self, request, project_pk, item_pk):
         item = self.get_object(project_pk, item_pk)
         item.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UserProjectSettingsDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, project_pk):
+        user = self.request.user
+        project = get_object_or_404(Project, pk=project_pk)
+        user_project_settings = get_object_or_404(UserProjectSettings, user=user, project=project)
+        self.check_object_permissions(self.request, user_project_settings)
+        return user_project_settings
+
+    def get(self, request, project_pk):
+        user_project_settings = self.get_object(project_pk)
+        serializer = UserProjectSettingsSerializer(user_project_settings)
+        return Response(serializer.data)
+
+    def put(self, request, project_pk):
+        user_project_settings = self.get_object(project_pk)
+        serializer = UserProjectSettingsSerializer(user_project_settings, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, project_pk):
+        print(request.data)
+        user_project_settings = self.get_object(project_pk)
+        serializer = UserProjectSettingsSerializer(user_project_settings, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, project_pk):
+        user_project_settings = self.get_object(project_pk)
+        user_project_settings.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
