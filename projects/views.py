@@ -66,7 +66,7 @@ class EpicListCreateAPIView(APIView):
     def get_objects(self, pk):
         # Retrieve epics for the request project
         project = get_object_or_404(Project, pk=pk)
-        epics = Epic.objects.filter(project=project)
+        epics = Epic.objects.filter(project=project).order_by('id')
         # Check the permissions for the project object
         self.check_object_permissions(self.request, project)
         return epics
@@ -177,7 +177,7 @@ class ItemListCreateAPIView(APIView):
     def get_objects(self, pk):
         # Retrieve user stories for the request project
         project = get_object_or_404(Project, pk=pk)
-        items = Item.objects.filter(project=project)
+        items = Item.objects.filter(project=project).order_by('id')
         # Check the permissions for the project object
         self.check_object_permissions(self.request, project)
         return items
