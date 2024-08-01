@@ -3,7 +3,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Project, Epic, Item, Sprint, UserProjectSettings
-from .serializers import ProjectSerializer, EpicSerializer, ItemSerializer, SprintSerializer, UserProjectSettingsSerializer
+from .serializers import (
+    ProjectSerializer,
+    EpicSerializer,
+    ItemSerializer,
+    SprintSerializer,
+    UserProjectSettingsSerializer
+)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
 from django.shortcuts import get_object_or_404

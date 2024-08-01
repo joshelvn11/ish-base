@@ -91,6 +91,9 @@ Coolify uses Nixpacks to automatically build and deploy Docker images. This appr
 
 ### Validator Testing
 
+Python code was validated using the PEP8 validator and passed with no major issues. In some cases line too long warning were ignored as I felt splitting these lines on multiple lines
+were adversely affect readability and maintainability. These are the only remaining errors.
+
 ### API Testing
 
 The raw API functionality is tested using POST Man by making API requests to all endpoints to ensure data validatity and application security.
